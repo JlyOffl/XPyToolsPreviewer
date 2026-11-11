@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
+<!-- X's stream servers refuse media requests that name another site; send no Referer, like opening the link directly. -->
+<meta name="referrer" content="no-referrer">
 <meta name="color-scheme" content="light dark">
 <title>Listen · XPyTools</title>
 <style>
@@ -43,7 +45,7 @@
     <a class="btn" id="direct" href="#" hidden>Open stream directly</a>
   </div>
   <p class="tip">Open in Safari to keep listening in the background. Closing Discord's in-app browser stops it.</p>
-  <audio id="audio" preload="none" playsinline></audio>
+  <audio id="audio" preload="none" playsinline referrerpolicy="no-referrer"></audio>
 </main>
 <script>
 (()=>{
@@ -103,7 +105,7 @@
   audio.addEventListener('playing',()=>{play.textContent='❚❚';play.setAttribute('aria-label','Pause');say('Playing live','ok');if('mediaSession' in navigator) navigator.mediaSession.playbackState='playing';});
   audio.addEventListener('pause',()=>{play.textContent='▶';play.setAttribute('aria-label','Play');say('Paused');if('mediaSession' in navigator) navigator.mediaSession.playbackState='paused';});
   audio.addEventListener('waiting',()=>say('Buffering…'));
-  audio.addEventListener('error',()=>{if(!hls) failed("Can't play it here. Try Open stream directly; if that fails too, the Space has ended.");});
+  audio.addEventListener('error',()=>{if(!hls){const code=audio.error?.code;failed(`Can't play it here${code?` (error ${code})`:''}. Try Open stream directly; if that fails too, the Space has ended.`);}});
 
   $('copy').addEventListener('click',async()=>{
     try{await navigator.clipboard.writeText(copyUrl);say('Stream link copied','ok');}
